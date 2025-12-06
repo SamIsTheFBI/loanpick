@@ -30,8 +30,10 @@ export function ProductChatSheet({
           <p className="text-sm text-muted-foreground">{product.bank}</p>
         </SheetHeader>
 
-        <div className="flex flex-col h-full px-4">
-          <ChatMessages messages={messages} />
+        <div className="flex flex-col h-[calc(100vh-8rem)] px-4">
+          <div className="flex-1 overflow-y-auto mb-4">
+            <ChatMessages messages={messages} />
+          </div>
 
           <ChatInput
             product={product}

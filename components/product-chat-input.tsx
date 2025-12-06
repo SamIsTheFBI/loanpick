@@ -11,10 +11,6 @@ interface ChatInputProps {
   onResponse: (message: ChatMessage) => void;
 }
 
-interface AskApiResponse {
-  answer: string;
-}
-
 export function ChatInput({ product, messages, onResponse }: ChatInputProps) {
   const [value, setValue] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
@@ -28,44 +24,32 @@ export function ChatInput({ product, messages, onResponse }: ChatInputProps) {
       content: trimmed,
     };
 
-    // Optimistically add the user message to UI
     onResponse(userMessage);
     setValue("");
     setLoading(true);
 
     try {
+      const history = messages.map(msg => ({
+        role: msg.role === "user" ? "user" : "model",
+        parts: [{ text: msg.content }],
+      }));
+
       const res = await fetch("/api/ai/ask", {
         method: "POST",
-        headers: {
-          "content-type": "application/json",
-        },
+        headers: { "content-type": "application/json" },
         body: JSON.stringify({
           productId: product.id,
           message: trimmed,
-          history: [...messages, userMessage],
+          history,
         }),
       });
 
-      if (!res.ok) {
-        throw new Error("Failed to get AI response");
-      }
+      if (!res.ok) throw new Error("Failed to get AI response");
 
-      const data = (await res.json()) as AskApiResponse;
-
-      const assistantMessage: ChatMessage = {
-        role: "assistant",
-        content: data.answer,
-      };
-
-      onResponse(assistantMessage);
+      const data = await res.json();
+      onResponse({ role: "assistant", content: data.response });
     } catch (error) {
-      const assistantMessage: ChatMessage = {
-        role: "assistant",
-        content: "Sorry, something went wrong while fetching the answer.",
-      };
-      onResponse(assistantMessage);
-      // Optionally log error to console
-      // console.error(error);
+      onResponse({ role: "assistant", content: "Sorry, something went wrong. Please try again." });
     } finally {
       setLoading(false);
     }
