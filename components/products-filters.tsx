@@ -26,40 +26,40 @@ export function ProductsFilters({ onFilter }: FiltersProps) {
   };
 
   return (
-    <div className="flex flex-wrap gap-4 mb-6">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:flex xl:flex-wrap gap-4 mb-6">
       <Input
         placeholder="Bank Name"
         value={bank}
         onChange={(e) => setBank(e.target.value)}
-        className="w-[200px]"
+        className="xl:w-[200px]"
       />
       <Input
         placeholder="APR Min"
         value={aprMin}
         onChange={(e) => setAprMin(e.target.value)}
-        className="w-[120px]"
+        className="xl:w-[120px]"
       />
       <Input
         placeholder="APR Max"
         value={aprMax}
         onChange={(e) => setAprMax(e.target.value)}
-        className="w-[120px]"
+        className="xl:w-[120px]"
       />
       <Input
         placeholder="Min Income"
         value={minIncome}
         onChange={(e) => setMinIncome(e.target.value)}
-        className="w-[150px]"
+        className="xl:w-[150px]"
       />
       <Input
         placeholder="Credit Score"
         value={minCreditScore}
         onChange={(e) => setMinCreditScore(e.target.value)}
-        className="w-[150px]"
+        className="xl:w-[150px]"
       />
 
-      <Button onClick={applyFilters}>
-        Apply
+      <Button onClick={applyFilters} className="sm:col-span-2 lg:col-span-3 xl:col-span-1">
+        Apply Filters
       </Button>
     </div>
   );
