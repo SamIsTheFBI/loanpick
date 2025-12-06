@@ -31,14 +31,10 @@ export default async function DashboardPage() {
         <p className="text-muted-foreground mt-2">Here are your best loan matches</p>
       </section>
 
-      <section>
-        <h2 className="text-2xl font-semibold mb-4">Best Match for You</h2>
-        <LoanCard product={bestMatch} />
-      </section>
-
       <section className="space-y-4">
-        <h2 className="text-2xl font-semibold">Other Recommended Loan Products</h2>
+        <h2 className="text-2xl font-semibold">Your Top Loan Matches</h2>
         <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <LoanCard product={bestMatch} isHighlighted />
           {others.map((p) => (
             <LoanCard key={p.id} product={p} />
           ))}
