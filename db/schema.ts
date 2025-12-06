@@ -17,8 +17,8 @@ export const products = pgTable("products", {
   rate_apr: numeric("rate_apr").notNull(),
   min_income: numeric("min_income").notNull(),
   min_credit_score: integer("min_credit_score").notNull(),
-  tenure_min_months: integer("tenure_min_months").default(6),
-  tenure_max_months: integer("tenure_max_months").default(60),
+  tenure_min_months: integer("tenure_min_months").default(6).notNull(),
+  tenure_max_months: integer("tenure_max_months").default(60).notNull(),
   processing_fee_pct: numeric("processing_fee_pct").default("0"),
   prepayment_allowed: boolean("prepayment_allowed").default(true),
   disbursal_speed: text("disbursal_speed").default("standard"),
@@ -36,4 +36,3 @@ export const ai_chat_messages = pgTable("ai_chat_messages", {
   content: text("content").notNull(),
   created_at: timestamp("created_at").defaultNow(),
 });
-
