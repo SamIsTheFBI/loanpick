@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { db } from "@/lib/db";
-import { products } from "@/db/schema";
+import { products, ai_chat_messages } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
+import { auth } from "@/lib/auth";
 
 const RequestSchema = z.object({
   productId: z.string().uuid(),
@@ -18,6 +19,11 @@ const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY || "");
 
 export async function POST(req: NextRequest) {
   try {
+    const session = await auth.api.getSession({ headers: req.headers });
+    if (!session?.user?.id) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
     const body = await req.json();
     const { productId, message, history } = RequestSchema.parse(body);
 
@@ -64,6 +70,11 @@ Guidelines:
 
     const result = await chat.sendMessage(message);
     const response = result.response.text();
+
+    await db.insert(ai_chat_messages).values([
+      { user_id: session.user.id, product_id: productId, role: "user", content: message },
+      { user_id: session.user.id, product_id: productId, role: "assistant", content: response },
+    ]);
 
     return NextResponse.json({ response });
   } catch (error) {

@@ -1,7 +1,7 @@
 "use client";
 
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import type { Product, ChatMessage } from "@/lib/types";
 import { ChatMessages } from "./product-chat-messages";
 import { ChatInput } from "./product-chat-input";
@@ -21,6 +21,28 @@ export function ProductChatSheet({
       content: `Hi! I can answer questions about **${product.name}** from **${product.bank}**.`,
     },
   ]);
+
+  useEffect(() => {
+    if (open) {
+      fetch(`/api/ai/history?productId=${product.id}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.messages?.length > 0) {
+            setMessages([
+              {
+                role: "assistant",
+                content: `Hi! I can answer questions about **${product.name}** from **${product.bank}**.`,
+              },
+              ...data.messages.map((m: any) => ({
+                role: m.role,
+                content: m.content,
+              })),
+            ]);
+          }
+        })
+        .catch(() => {});
+    }
+  }, [open, product.id, product.name, product.bank]);
 
   return (
     <Sheet open={open} onOpenChange={onCloseAction}>
