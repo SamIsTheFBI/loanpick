@@ -60,7 +60,15 @@ export function ProductChatSheet({
           <ChatInput
             product={product}
             messages={messages}
-            onResponse={(msg) => setMessages((m) => [...m, msg])}
+            onResponse={(msg) => {
+              if (msg.content === "loading") {
+                setMessages((m) => [...m, msg]);
+              } else if (msg.role === "assistant") {
+                setMessages((m) => [...m.filter(x => x.content !== "loading"), msg]);
+              } else {
+                setMessages((m) => [...m, msg]);
+              }
+            }}
           />
         </div>
       </SheetContent>

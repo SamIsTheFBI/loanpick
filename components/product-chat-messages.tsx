@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from "react";
 import ReactMarkdown from "react-markdown";
+import { Loader } from "lucide-react";
 
 export function ChatMessages({ messages }: { messages: { role: string; content: string }[] }) {
   const endRef = useRef<HTMLDivElement>(null);
@@ -22,24 +23,31 @@ export function ChatMessages({ messages }: { messages: { role: string; content: 
           }`}
         >
           {m.role === "assistant" ? (
-            <div className="prose prose-sm dark:prose-invert max-w-none">
-              <ReactMarkdown
-                components={{
-                  p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
-                  ul: ({ children }) => <ul className="list-disc ml-4 mb-2">{children}</ul>,
-                  ol: ({ children }) => <ol className="list-decimal ml-4 mb-2">{children}</ol>,
-                  li: ({ children }) => <li className="mb-1">{children}</li>,
-                  strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
-                  code: ({ children }) => (
-                    <code className="bg-muted-foreground/20 px-1 py-0.5 rounded text-xs">
-                      {children}
-                    </code>
-                  ),
-                }}
-              >
-                {m.content}
-              </ReactMarkdown>
-            </div>
+            m.content === "loading" ? (
+              <div className="flex items-center gap-2">
+                <Loader className="h-4 w-4 animate-spin" />
+                <span>Thinking...</span>
+              </div>
+            ) : (
+              <div className="prose prose-sm dark:prose-invert max-w-none">
+                <ReactMarkdown
+                  components={{
+                    p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
+                    ul: ({ children }) => <ul className="list-disc ml-4 mb-2">{children}</ul>,
+                    ol: ({ children }) => <ol className="list-decimal ml-4 mb-2">{children}</ol>,
+                    li: ({ children }) => <li className="mb-1">{children}</li>,
+                    strong: ({ children }) => <strong className="font-semibold">{children}</strong>,
+                    code: ({ children }) => (
+                      <code className="bg-muted-foreground/20 px-1 py-0.5 rounded text-xs">
+                        {children}
+                      </code>
+                    ),
+                  }}
+                >
+                  {m.content}
+                </ReactMarkdown>
+              </div>
+            )
           ) : (
             m.content
           )}

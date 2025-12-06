@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import type { Product, ChatMessage } from "@/lib/types";
+import { Loader } from "lucide-react";
 
 interface ChatInputProps {
   product: Product;
@@ -25,6 +26,7 @@ export function ChatInput({ product, messages, onResponse }: ChatInputProps) {
     };
 
     onResponse(userMessage);
+    onResponse({ role: "assistant", content: "loading" });
     setValue("");
     setLoading(true);
 
@@ -70,7 +72,7 @@ export function ChatInput({ product, messages, onResponse }: ChatInputProps) {
         }}
       />
       <Button onClick={handleSend} disabled={loading}>
-        {loading ? "Sending..." : "Send"}
+        {loading ? <Loader className="h-4 w-4 animate-spin" /> : "Send"}
       </Button>
     </div>
   );

@@ -1,66 +1,115 @@
 "use client";
 
-import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
-import { useState } from "react";
+import { RotateCcw, SlidersHorizontal } from "lucide-react";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
 
-interface FiltersProps {
-  onFilter: (filters: Record<string, string | number>) => void;
+export interface FilterValues {
+  aprRange: [number, number];
+  minIncome: number;
+  minCreditScore: number;
 }
 
-export function ProductsFilters({ onFilter }: FiltersProps) {
-  const [bank, setBank] = useState("");
-  const [aprMin, setAprMin] = useState("");
-  const [aprMax, setAprMax] = useState("");
-  const [minIncome, setMinIncome] = useState("");
-  const [minCreditScore, setMinCreditScore] = useState("");
+interface ProductsFiltersProps {
+  filters: FilterValues;
+  onFiltersChange: (filters: FilterValues) => void;
+}
 
-  const applyFilters = () => {
-    onFilter({
-      bank,
-      aprMin,
-      aprMax,
-      minIncome,
-      minCreditScore,
+export function ProductsFilters({ filters, onFiltersChange }: ProductsFiltersProps) {
+  const handleReset = () => {
+    onFiltersChange({
+      aprRange: [0, 20],
+      minIncome: 0,
+      minCreditScore: 0,
     });
   };
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:flex xl:flex-wrap gap-4 mb-6">
-      <Input
-        placeholder="Bank Name"
-        value={bank}
-        onChange={(e) => setBank(e.target.value)}
-        className="xl:w-[200px]"
-      />
-      <Input
-        placeholder="APR Min"
-        value={aprMin}
-        onChange={(e) => setAprMin(e.target.value)}
-        className="xl:w-[120px]"
-      />
-      <Input
-        placeholder="APR Max"
-        value={aprMax}
-        onChange={(e) => setAprMax(e.target.value)}
-        className="xl:w-[120px]"
-      />
-      <Input
-        placeholder="Min Income"
-        value={minIncome}
-        onChange={(e) => setMinIncome(e.target.value)}
-        className="xl:w-[150px]"
-      />
-      <Input
-        placeholder="Credit Score"
-        value={minCreditScore}
-        onChange={(e) => setMinCreditScore(e.target.value)}
-        className="xl:w-[150px]"
-      />
+    <Dialog>
+      <DialogTrigger asChild>
+        <Button variant="outline" className="gap-2">
+          <SlidersHorizontal className="w-4 h-4" />
+          Filters
+        </Button>
+      </DialogTrigger>
+      <DialogContent>
+        <DialogHeader>
+          <DialogTitle className="flex items-center justify-between">
+            <span>Filters</span>
+            <Button variant="ghost" size="sm" onClick={handleReset} className="gap-1.5">
+              <RotateCcw className="w-3.5 h-3.5" />
+              Reset
+            </Button>
+          </DialogTitle>
+        </DialogHeader>
 
-      <Button onClick={applyFilters} className="sm:col-span-2 lg:col-span-3 xl:col-span-1">
-        Apply Filters
-      </Button>
-    </div>
+        <div className="space-y-6 py-4">
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <Label>APR Range</Label>
+              <span className="text-sm text-muted-foreground">
+                {filters.aprRange[0]}% - {filters.aprRange[1]}%
+              </span>
+            </div>
+            <Slider
+              value={filters.aprRange}
+              onValueChange={(value) =>
+                onFiltersChange({ ...filters, aprRange: value as [number, number] })
+              }
+              min={0}
+              max={20}
+              step={0.5}
+              className="py-2"
+            />
+          </div>
+
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <Label>Min Monthly Income</Label>
+              <span className="text-sm text-muted-foreground">
+                ₹{filters.minIncome.toLocaleString()}
+              </span>
+            </div>
+            <Slider
+              value={[filters.minIncome]}
+              onValueChange={(value) =>
+                onFiltersChange({ ...filters, minIncome: value[0] })
+              }
+              min={0}
+              max={100000}
+              step={5000}
+              className="py-2"
+            />
+          </div>
+
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <Label>Min Credit Score</Label>
+              <span className="text-sm text-muted-foreground">
+                {filters.minCreditScore || "Any"}
+              </span>
+            </div>
+            <Slider
+              value={[filters.minCreditScore]}
+              onValueChange={(value) =>
+                onFiltersChange({ ...filters, minCreditScore: value[0] })
+              }
+              min={0}
+              max={850}
+              step={10}
+              className="py-2"
+            />
+          </div>
+        </div>
+      </DialogContent>
+    </Dialog>
   );
 }
