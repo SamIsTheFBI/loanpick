@@ -25,7 +25,7 @@ export default async function DashboardPage() {
   return (
     <div className="space-y-10">
       <section>
-        <h1 className="text-3xl font-bold">
+        <h1 className="text-3xl font-bold tracking-tighter">
           Welcome, {session.user.name}!
         </h1>
         <p className="text-muted-foreground mt-2">Here are your best loan matches</p>

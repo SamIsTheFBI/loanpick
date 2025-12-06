@@ -56,7 +56,7 @@ export function ChatInput({ product, messages, onResponse }: ChatInputProps) {
   }
 
   return (
-    <div className="flex gap-2 mt-4">
+    <div className="flex gap-2 mt-4 static">
       <Input
         placeholder="Ask something about this loan..."
         value={value}

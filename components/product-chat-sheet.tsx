@@ -40,19 +40,19 @@ export function ProductChatSheet({
             ]);
           }
         })
-        .catch(() => {});
+        .catch(() => { });
     }
   }, [open, product.id, product.name, product.bank]);
 
   return (
     <Sheet open={open} onOpenChange={onCloseAction}>
-      <SheetContent side="right" className="w-full sm:max-w-md px-0">
+      <SheetContent side="right" className="w-full sm:max-w-md px-0 h-screen">
         <SheetHeader className="px-4">
           <SheetTitle>{product.name}</SheetTitle>
           <p className="text-sm text-muted-foreground">{product.bank}</p>
         </SheetHeader>
 
-        <div className="flex flex-col h-[calc(100vh-8rem)] px-4">
+        <div className="flex flex-col h-[calc(100svh-8rem)] px-4">
           <div className="flex-1 overflow-y-auto mb-4">
             <ChatMessages messages={messages} />
           </div>
