@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import type { Product, ChatMessage } from "@/lib/types";
 import { Loader } from "lucide-react";
+import { toast } from "sonner";
 
 interface ChatInputProps {
   product: Product;
@@ -46,11 +47,15 @@ export function ChatInput({ product, messages, onResponse }: ChatInputProps) {
         }),
       });
 
-      if (!res.ok) throw new Error("Failed to get AI response");
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.error || "Failed to get AI response");
+      }
 
       const data = await res.json();
       onResponse({ role: "assistant", content: data.response });
-    } catch (error) {
+    } catch (error: any) {
+      toast.error(error.message || "Failed to get response. Please try again.");
       onResponse({ role: "assistant", content: "Sorry, something went wrong. Please try again." });
     } finally {
       setLoading(false);

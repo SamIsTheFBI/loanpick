@@ -31,6 +31,7 @@ import {
 } from "@/components/ui/sidebar"
 import { authClient } from "@/lib/auth-client"
 import { useRouter } from "next/navigation"
+import { toast } from "sonner"
 
 export function NavUser({
   user,
@@ -45,8 +46,13 @@ export function NavUser({
 
   const router = useRouter();
   async function handleLogout() {
-    await authClient.signOut();
-    router.push("/login");
+    try {
+      await authClient.signOut();
+      toast.success("Logged out successfully");
+      router.push("/login");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to log out");
+    }
   }
 
 

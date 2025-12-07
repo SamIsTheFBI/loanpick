@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import type { Product, ChatMessage } from "@/lib/types";
 import { ChatMessages } from "./product-chat-messages";
 import { ChatInput } from "./product-chat-input";
+import { toast } from "sonner";
 
 export function ProductChatSheet({
   product,
@@ -25,7 +26,10 @@ export function ProductChatSheet({
   useEffect(() => {
     if (open) {
       fetch(`/api/ai/history?productId=${product.id}`)
-        .then(res => res.json())
+        .then(res => {
+          if (!res.ok) throw new Error("Failed to load chat history");
+          return res.json();
+        })
         .then(data => {
           if (data.messages?.length > 0) {
             setMessages([
@@ -40,7 +44,9 @@ export function ProductChatSheet({
             ]);
           }
         })
-        .catch(() => { });
+        .catch((err) => {
+          toast.warning("Could not load previous chat history");
+        });
     }
   }, [open, product.id, product.name, product.bank]);
 

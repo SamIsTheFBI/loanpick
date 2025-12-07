@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { fetchProducts } from "@/lib/queries/products";
 import { ProductsFilters, type FilterValues } from "@/components/products-filters";
@@ -11,6 +11,7 @@ import { Input } from "@/components/ui/input";
 import { Search } from "lucide-react";
 import { SidebarTrigger } from "@/components/ui/sidebar";
 import { useIsMobile } from "@/hooks/use-mobile";
+import { toast } from "sonner";
 
 export default function ProductsPage() {
   const [bankSearch, setBankSearch] = useState("");
@@ -39,6 +40,12 @@ export default function ProductsPage() {
     }),
   });
 
+  useEffect(() => {
+    if (isError) {
+      toast.error((error as Error).message || "Failed to load products");
+    }
+  }, [isError, error]);
+
   const isMobile = useIsMobile()
 
   return (
@@ -58,12 +65,6 @@ export default function ProductsPage() {
       </div>
 
       {isLoading && <ProductsGridSkeleton />}
-
-      {isError && (
-        <p className="text-red-600 text-sm">
-          {(error as Error).message || "Something went wrong."}
-        </p>
-      )}
 
       {products && <ProductsGrid products={products} onAsk={() => { }} />}
     </div>

@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { toast } from "sonner";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -13,30 +14,36 @@ export default function LoginPage() {
   const [name, setName] = useState("");
   const [isSignUp, setIsSignUp] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
   const router = useRouter();
 
   async function handleEmailAuth(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
-    setError("");
 
     try {
+      let result;
       if (isSignUp) {
-        await authClient.signUp.email({
+        result = await authClient.signUp.email({
           email,
           password,
           name,
         });
       } else {
-        await authClient.signIn.email({
+        result = await authClient.signIn.email({
           email,
           password,
         });
       }
+
+      if (result.error) {
+        toast.error(result.error.message || "Authentication failed");
+        return;
+      }
+
+      toast.success(isSignUp ? "Account created successfully!" : "Signed in successfully!");
       router.push("/dashboard");
     } catch (err: any) {
-      setError(err.message || "Authentication failed");
+      toast.error(err.message || "Authentication failed");
     } finally {
       setLoading(false);
     }
@@ -45,12 +52,17 @@ export default function LoginPage() {
   async function handleGoogleAuth() {
     setLoading(true);
     try {
-      await authClient.signIn.social({ 
+      const result = await authClient.signIn.social({ 
         provider: "google",
         callbackURL: "/dashboard",
       });
+      
+      if (result?.error) {
+        toast.error(result.error.message || "Google sign-in failed");
+        setLoading(false);
+      }
     } catch (err: any) {
-      setError(err.message || "Google sign-in failed");
+      toast.error(err.message || "Google sign-in failed");
       setLoading(false);
     }
   }
@@ -88,7 +100,6 @@ export default function LoginPage() {
               onChange={(e) => setPassword(e.target.value)}
               required
             />
-            {error && <p className="text-sm text-destructive">{error}</p>}
             <Button type="submit" className="w-full" disabled={loading}>
               {loading ? "Loading..." : isSignUp ? "Sign Up" : "Sign In"}
             </Button>
@@ -115,10 +126,7 @@ export default function LoginPage() {
           <Button
             variant="link"
             className="w-full"
-            onClick={() => {
-              setIsSignUp(!isSignUp);
-              setError("");
-            }}
+            onClick={() => setIsSignUp(!isSignUp)}
           >
             {isSignUp ? "Already have an account? Sign in" : "Don't have an account? Sign up"}
           </Button>
